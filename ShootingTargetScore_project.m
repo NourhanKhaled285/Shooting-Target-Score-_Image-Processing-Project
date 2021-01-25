@@ -1,4 +1,4 @@
-str='1.2c.jpg';
+str='4.2c.jpg';
 B = imread(str); 
  B=imresize(B,[1300,1300]);
 [y,x,s]=size(B);
@@ -102,16 +102,16 @@ figure ,imshow(B),title('resized & croped img');
 level = 0.1;
 %  level = 0.6;
  temp= im2bw(B,level);
-%  se = strel('disk',4);
-%  temp = imerode(temp,se);
+ se = strel('disk',4);
+ temp = imerode(temp,se);
 
- se = strel('disk', 17);
- temp = imclose(temp,se);
+%  se = strel('disk', 17);
+%  temp = imclose(temp,se);
 
  figure ,imshow(temp),title('hough transform detected img');
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% 
 % [centers, radi,matrix] = imfindcircles(temp,[16 35],'ObjectPolarity','bright');%16 35
 % viscircles(centers, radi,'EdgeColor','b');
 
@@ -131,8 +131,7 @@ viscircles(centers, radi,'EdgeColor','r');
 % [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','bright');%15 5000
 % viscircles(centers, radi,'EdgeColor','b');
 
-centers
-radi
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%range code %%%%%%%%%%%%%%%%%%
 I=B;
@@ -143,8 +142,8 @@ cb=5;
 for i=wn:w
    
  for po=0:10
-        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn+40,i,:);
-        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn+40,i,:);
+        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn+40-po,i,:);
+        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn+40-po,i,:);
  end
 
 end
@@ -160,15 +159,18 @@ end
 %   col(hn,wn,2)=0;
 %    col(hn,wn,3)=255;
  % I=imgaussfilt(I,2);
- level = 0.6;
+%  level = 0.6;
  col=I;
-%  level = 0.2;
-I=rgb2gray(I);
-% y = graythresh(I);
-%  I= I>90;
+ level = 0.2;
+
+% gray=rgb2gray(I);
+%  I= gray>200;
  I=im2bw(I,level);
- se = strel('line',12,29);
-I = imclose(I,se);
+%  se = strel('line',12,29);
+% I = imclose(I,se);
+
+%  se = strel('disk',6);
+% I = imerode(I,se);
 figure ,imshow(I),title('close');
 %%%%%%%%%%%%%%%%%
 L= length(centers);
@@ -188,7 +190,7 @@ for i=wn:w
 %          col(hn,sav_pos+cou_matrix.(cou_idx-1),2)=0;
 %          col(hn,sav_pos+cou_matrix(cou_idx-1),3)=255;
 %     end
-     if(cou_idx==1&&~(CenterColor ==I(hn,i)))
+     if(cou_idx==1&&~(CenterColor ==I(hn,i))&&I(hn,i)==I(hn+20,i))
 %          cou
        
            % if(check==0)
@@ -206,7 +208,8 @@ for i=wn:w
       check=0;
 %                end
      end
-    if ~(CenterColor ==I(hn,i))
+    if CenterColor ~=I(hn,i)&&I(hn,i)==I(hn+20,i)
+        
 
 %             cou
             if(cou_idx>1&&cou>=cou_matrix(1)/2)
@@ -272,10 +275,10 @@ for v=wn:w
     
 end
 
-if ~(strcmp(str,'1.1c.jpeg')||strcmp(str,'3.2c.png'))
-ranges=ranges-1;
-end
-rad_det
+% if ~(strcmp(str,'1.1c.jpeg')||strcmp(str,'3.2c.png'))
+% ranges=ranges-1;
+% end
+% rad_det
 
 
 pos=zeros(rad_idx-1,2);
@@ -313,6 +316,8 @@ end
  figure,imshow(col),title('det');
 
 %%%%%%%%%%%%%%%%%calculate the score%%%%%%%%%%%%%%%%%
+ranges;
+rad_det
 Bullseye_hit= ranges *100;
 Bullseye_hit
 distances=[];
