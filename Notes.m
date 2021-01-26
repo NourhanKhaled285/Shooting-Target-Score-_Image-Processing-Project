@@ -7,41 +7,55 @@
 
 %{
 case1
+1- image <--1.1.jpeg--> after remove water mark
+2- the image is BW image and thresholding =0.1
+3- range of shoots = [12 60] 
+4- hough transform success
+ se = strel('disk',4);
+ temp = imerode(temp,se);
+
+
 1- image <--1.2.jpg--> havenot noise or water? mark 
 2- the image is BW image and thresholding =0.1
 3- range of shoots = [12 60] 
 4- hough transform success
+%  se = strel('disk', 17);
+%  temp = imclose(temp,se);
+
+
+1- image <--1.3.jpeg--> after remove water mark
+2- the image is BW image and thresholding =0.1
+3- range of shoots = [12 60] 
+4- hough transform success
+ se = strel('disk',4);
+ temp = imerode(temp,se);
+5-to get ranges the threshold is 
+temp=gray>200;
 
 case3 
 1- image <--3.2.png--> havenot noise or water? mark 
 2- the image is BW image and thresholding =0.1
-3- range of shoots = [12 60] or 0.6 and [16 35]
+3- range of shoots = [12 60] 
 4- hough transform success
+ se = strel('disk',4);
+ temp = imerode(temp,se);
 
 case 3
 1- image <--3.3.png--> havenot noise or water mark 
 2- the image is BW image and thresholding =0.6
-3- range of shoots = [16 35]
+3- range of shoots = [12 60]
 4- but should make ~ to the image because hough transform detect only black
 or make that<--bright--> instead of dark
 circles in BW images
 5- hough transform success
-% preprocessing to remove number noise
- B=rgb2gray(B);
- figure,imhist(B);
-figure ,imshow(B);
-[h,w,s]=size(B);
-for o=1:h
-    for k=1:w
-     if(B(o,k,s)>50&&B(o,k,s)<150)
-           
-            B(o,k,s)=210;
-     end
-        
-    end
-end
-figure ,imshow(B),title('removed');
+ se = strel('disk',4);
+ temp = imerode(temp,se);
 
+ se = strel('disk', 17);
+ temp = imclose(temp,se);
+
+6- to get the ranges threshold is 
+temp=gray>149;
 
 case4
 
@@ -51,7 +65,8 @@ case4
 4- but should make ~ to the image because hough transform detect only black
 or make that <--bright--> instead of dark
 circles in BW images
-5- cannot detect all circles
+5- cannot detect all circles faiiiiiiiiiiiiiiil in all ^-^ 
+                    <--(special case)-->
 6-imgr=rgb2gray(B);
  temp=imgr>100;
 se = strel('disk',8);
@@ -60,19 +75,8 @@ se = strel('disk',8);
    
 [centers, radi,matrix] = imfindcircles(temp,[13 60],'ObjectPolarity','bright');%16 35
 viscircles(centers, radi,'EdgeColor','b');
- 
-should remove lines to detect right ranges by using filters and morphology
- m=Sobel('H');
- B=LinearFilter(B,m,'absolute');
- figure,imshow(B),title('sobel detect horizontal edges');
- filterWindow = ones(5)/ 25;
- I= imfilter(B, filterWindow);
- figure,imshow(I),title('mean filter');
- se1 = strel('line',9,25);
- I = imerode(I,se1);   
- se = strel('disk',15,0);
- I = imclose(I,se);
- figure ,imshow(I),title('closing filter');
+
+
 
 1- image <--4.2.jpg--> havenot noise or water mark 
 2- the image is BW image and thresholding =0.6
@@ -82,7 +86,11 @@ or make that <--bright--> instead of dark
 circles in BW images
 5- hough transform success 
 6-threshold to detect number of ranges 0.3 or 0.2
+ se = strel('disk',4);
+ temp = imerode(temp,se);
 
+ se = strel('disk', 17);
+ temp = imclose(temp,se);
 
 case 7
 1-image <--7.1.jpg--> have water mark 
@@ -98,6 +106,6 @@ circles in BW images
 
 
 %{
-we should make mask to fil the shoots with diffirent color about whita and black 
+we should make mask to fill the shoots with diffirent color about white and black 
 to recognize only the ranges
 %}
