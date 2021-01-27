@@ -1,8 +1,8 @@
     % 1.2 ?? 3.2 3.3 4.1 4.2 without water mark
     %3.1 1.1 1.3 with watermark 
     %case2 deleted
-    % any img the shooting is bright the threesholding is 0.6 and the dark is
-    % 0.1 
+% any img the shooting is bright the threesholding is 0.6 and the dark is
+% 0.1 
 
 
 %{
@@ -65,8 +65,7 @@ case4
 4- but should make ~ to the image because hough transform detect only black
 or make that <--bright--> instead of dark
 circles in BW images
-5- cannot detect all circles faiiiiiiiiiiiiiiil in all ^-^ 
-                    <--(special case)-->
+5- cannot detect all circles
 6-imgr=rgb2gray(B);
  temp=imgr>100;
 se = strel('disk',8);
@@ -106,18 +105,6 @@ circles in BW images
 
 
 %{
-we should make mask to fill the shoots with diffirent color about white and black 
+we should make mask to fil the shoots with diffirent color about whita and black 
 to recognize only the ranges
-%}
-    
-    
-%{
-% disk = strel('disk', 8);
-% open = imopen(I,disk);
-% figure ,imshow(open),title('open');
-% open=edge(open,'canny');
-% imdilated = imdilate(open,ones(6,6));
-% % [L num] = bwlabel(imdilated);
-% % RGB = label2rgb(L); 
-% figure ,imshow(RGB),title('imdilated')
 %}
