@@ -109,3 +109,17 @@ circles in BW images
 we should make mask to fill the shoots with diffirent color about white and black 
 to recognize only the ranges
 %}
+
+
+
+
+%{
+% disk = strel('disk', 8);
+% open = imopen(I,disk);
+% figure ,imshow(open),title('open');
+% open=edge(open,'canny');
+% imdilated = imdilate(open,ones(6,6));
+% % [L num] = bwlabel(imdilated);
+% % RGB = label2rgb(L); 
+% figure ,imshow(RGB),title('imdilated')
+%}
