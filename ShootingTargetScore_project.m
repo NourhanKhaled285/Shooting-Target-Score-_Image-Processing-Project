@@ -1,33 +1,44 @@
-str='1.2c.jpg';
-B = imread(str); 
+str='1.1c.jpeg';
+ B = imread(str); 
  B=imresize(B,[1300,1300]);
 [y,x,s]=size(B);
-figure ,imshow(B),title('original size');
-  
-<<<<<<< HEAD
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% preprocessing & hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-=======
-  
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% preprocessing %%%%%%%%%%%%%%%%%%%%%%%%%%%%  
->>>>>>> e729b207a63c4a918773e4416c1f2cf3f4a0f282
-rec=[7,100,1286-7,1202-100];
-imc=imcrop(B,rec); 
-B=imc;
-figure ,imshow(B),title('resized & croped img');
+% figure ,imshow(B),title('original size');
+
+figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1), imshow(B),title('original size');
+
+
+% <<<<<<< HEAD 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%% preprocessing & hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+% rec=[7,100,1286-7,1202-100];
+% imc=imcrop(B,rec); 
+% B=imc;
+% figure ,imshow(B),title('resized & croped img');
+
 level = 0.06;
 temp= im2bw(B,level);
 [centers] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');
 [A] = size(centers) ;
 if(A==0)
- [centers , radi , matrix] = bright(B);
+ [centers , radi , matrix,I] = bright(B);
+ subplot(2,2,2), imshow(I),title('hough transform detected img');
 else
- [centers , radi , matrix] = dark(B);
+ [centers , radi , matrix,I,I2] = dark(B);
+ subplot(2,2,2), imshow(I),title('hough transform detected img bothat');
+ subplot(2,2,3.5), imshow(I2),title('hough transform detected img');
 end
 [A] = size(centers);
 disp(A);
 
-<<<<<<< HEAD
+% level = 0.1;
+%  temp= im2bw(B,level);
+%  se = strel('disk',4);
+%  temp = imerode(temp,se);
+% [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');%15 5000
+% viscircles(centers, radi,'EdgeColor','r');
+% figure ,imshow(temp),title('BW detected shoots');
 
+
+% <<<<<<< HEAD
 % %%%%%%%%%%%%%%%%%%%%%%%%range code %%%%%%%%%%%%%%%%%%
 I=B;
 [h,w,s]=size(I);
@@ -41,20 +52,17 @@ for i=wn:w
  end
 
 end
-    figure,imshow(I),title('deleted');
+ figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1),imshow(I),title('horizontal noise deleted');
 % BW2 = bwperim(I,8);
  level = 0.6;
  col=I;
-gray=rgb2gray(I);
-ti=gray>200;
-figure ,imshow(ti),title('gray > 200');
 BW = locallapfilt(I,0.95,0.5);
 BW = locallapfilt(BW,0.7,0.5);
 BW=imgaussfilt(BW,0.7);
  I=im2bw(BW,level);
 
 % figure ,imshow(BW),title('close1');
-figure ,imshow(I),title('close org');
+ subplot(2,2,2),imshow(I),title('BW to calc ranges');
 %%%%%%%%%%%%%%%%%
 L= length(centers);
 CenterColor = I(hn,wn); 
@@ -65,10 +73,10 @@ cou_idx=1;
 res=0;
 sav_pos=0;
 jump=0;
+col(hn,wn,1)=0;
+col(hn,wn,2)=0;
+col(hn,wn,3)=255;
 for i=wn:w
-     col(hn,wn,1)=0;
-     col(hn,wn,2)=0;
-     col(hn,wn,3)=255;
 
      if(cou_idx==1&&~(CenterColor ==I(hn,i))&&I(hn,i)==I(hn+20,i))
           %cou
@@ -193,7 +201,7 @@ end
 
  color = {'red'};
  col = insertMarker(col,centers,'x','color',color,'size',10);
- figure,imshow(col),title('det');
+ subplot(2,2,3.5),imshow(col),title('detected ranges');
 
 %%%%%%%%%%%%%%%%%calculate the score%%%%%%%%%%%%%%%%%
 ranges=ranges-1;
