@@ -109,8 +109,15 @@ circles in BW images
 we should make mask to fill the shoots with diffirent color about white and black 
 to recognize only the ranges
 %}
+<<<<<<< HEAD
     
     
+=======
+
+
+
+
+>>>>>>> e729b207a63c4a918773e4416c1f2cf3f4a0f282
 %{
 % disk = strel('disk', 8);
 % open = imopen(I,disk);
@@ -120,4 +127,8 @@ to recognize only the ranges
 % % [L num] = bwlabel(imdilated);
 % % RGB = label2rgb(L); 
 % figure ,imshow(RGB),title('imdilated')
+<<<<<<< HEAD
 %}
+=======
+%}
+>>>>>>> e729b207a63c4a918773e4416c1f2cf3f4a0f282

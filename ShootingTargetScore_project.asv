@@ -1,32 +1,49 @@
-str='1.2c.jpg';
+str='1.1c.jpeg';
 B = imread(str); 
  B=imresize(B,[1300,1300]);
 [y,x,s]=size(B);
 figure ,imshow(B),title('original size');
   
-<<<<<<< HEAD
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% preprocessing & hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-=======
   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% preprocessing %%%%%%%%%%%%%%%%%%%%%%%%%%%%  
->>>>>>> e729b207a63c4a918773e4416c1f2cf3f4a0f282
-rec=[7,100,1286-7,1202-100];
-imc=imcrop(B,rec); 
-B=imc;
+ rec=[7,100,1286-7,1202-100];
+ imc=imcrop(B,rec); 
+ B=imc;
 figure ,imshow(B),title('resized & croped img');
-level = 0.06;
-temp= im2bw(B,level);
-[centers] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');
-[A] = size(centers) ;
-if(A==0)
- [centers , radi , matrix] = bright(B);
-else
- [centers , radi , matrix] = dark(B);
-end
-[A] = size(centers);
-disp(A);
+% gray=rgb2gray(B);
+% temp=gray>100;
+   level = 0.1;
+%  level = 0.6;
+ temp= im2bw(B,level);
+%  se = strel('disk',6);
+%  temp = imopen(temp,se);
+%  se = strel('disk',4);
+%  temp = imerode(temp,se);
+%  se = strel('disk', 17);
+%  temp = imclose(temp,se);
 
-<<<<<<< HEAD
+ figure ,imshow(temp),title('hough transform detected img');
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% [centers, radi,matrix] = imfindcircles(temp,[16 35],'ObjectPolarity','bright');%16 35
+% viscircles(centers, radi,'EdgeColor','b');
+
+
+
+% [centers, radi,matrix] = imfindcircles(temp,[16 35],'ObjectPolarity','dark');%15 5000
+% viscircles(centers, radi,'EdgeColor','r');
+
+
+[centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');%15 5000
+viscircles(centers, radi,'EdgeColor','r');
+
+
+% [centers, radi,matrix] = imfindcircles(temp,[12 80],'ObjectPolarity','bright');%15 5000
+% viscircles(centers, radi,'EdgeColor','b');
+ 
+% [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','bright');%15 5000
+% viscircles(centers, radi,'EdgeColor','b');
 
 % %%%%%%%%%%%%%%%%%%%%%%%%range code %%%%%%%%%%%%%%%%%%
 I=B;
@@ -50,9 +67,8 @@ ti=gray>200;
 figure ,imshow(ti),title('gray > 200');
 BW = locallapfilt(I,0.95,0.5);
 BW = locallapfilt(BW,0.7,0.5);
-BW=imgaussfilt(BW,0.7);
  I=im2bw(BW,level);
-
+ I=imgaussfilt()
 % figure ,imshow(BW),title('close1');
 figure ,imshow(I),title('close org');
 %%%%%%%%%%%%%%%%%
@@ -69,9 +85,13 @@ for i=wn:w
      col(hn,wn,1)=0;
      col(hn,wn,2)=0;
      col(hn,wn,3)=255;
-
+%     if(i==w&&cou>=cou_matrix(cou_idx-1))
+%          col(hn,sav_pos+cou_matrix(cou_idx-1),1)=0;
+%          col(hn,sav_pos+cou_matrix.(cou_idx-1),2)=0;
+%          col(hn,sav_pos+cou_matrix(cou_idx-1),3)=255;
+%     end
      if(cou_idx==1&&~(CenterColor ==I(hn,i))&&I(hn,i)==I(hn+20,i))
-          %cou
+%          cou
            jump=jump+1;
            % if(check==0)
                 col(hn,i-1,1)=0;
@@ -91,7 +111,7 @@ for i=wn:w
     if CenterColor ~=I(hn,i)&&I(hn,i)==I(hn+20,i)
         
 
-               %cou
+%             cou
             if(cou_idx>1&&cou>=cou_matrix(1)/2)
 
 %              if(check==0)
@@ -191,8 +211,8 @@ end
  color = {'red'};
  col = insertMarker(col,pos2,'x','color',color,'size',10);
 
- color = {'red'};
- col = insertMarker(col,centers,'x','color',color,'size',10);
+%  color = {'red'};
+%  col = insertMarker(col,centers,'x','color',color,'size',10);
  figure,imshow(col),title('det');
 
 %%%%%%%%%%%%%%%%%calculate the score%%%%%%%%%%%%%%%%%
@@ -319,45 +339,3 @@ score
 % 
 % 
 % % 
-
-
-
-%  rec=[7,100,1286-7,1202-100];
-%  imc=imcrop(B,rec); 
-%  B=imc;
-% figure ,imshow(B),title('resized & croped img');
-% % gray=rgb2gray(B);
-% % temp=gray>100;
-%    level = 0.1;
-% %  level = 0.6;
-%  temp= im2bw(B,level);
-% %  se = strel('disk',6);
-% %  temp = imopen(temp,se);
-% %  se = strel('disk',4);
-% %  temp = imerode(temp,se);
-% %  se = strel('disk', 17);
-% %  temp = imclose(temp,se);
-% 
-%  figure ,imshow(temp),title('hough transform detected img');
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% [centers, radi,matrix] = imfindcircles(temp,[16 35],'ObjectPolarity','bright');%16 35
-% viscircles(centers, radi,'EdgeColor','b');
-
-
-
-% [centers, radi,matrix] = imfindcircles(temp,[16 35],'ObjectPolarity','dark');%15 5000
-% viscircles(centers, radi,'EdgeColor','r');
-
-% 
-% [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');%15 5000
-% viscircles(centers, radi,'EdgeColor','r');
-
-
-% [centers, radi,matrix] = imfindcircles(temp,[12 80],'ObjectPolarity','bright');%15 5000
-% viscircles(centers, radi,'EdgeColor','b');
- 
-% [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','bright');%15 5000
-% viscircles(centers, radi,'EdgeColor','b');
-
