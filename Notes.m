@@ -79,18 +79,20 @@ viscircles(centers, radi,'EdgeColor','b');
 
 
 1- image <--4.2.jpg--> havenot noise or water mark 
-2- the image is BW image and thresholding =0.6
+2- the image is BW image and thresholding =0.6 and preprocessing
+  se = strel('disk',4);
+  temp = imerode(temp,se);
+
+ se = strel('disk', 17);
+ temp = imclose(temp,se);
 3- range of shoots = [12 60]
 4- but should make ~ to the image because hough transform detect only black
 or make that <--bright--> instead of dark
 circles in BW images
 5- hough transform success 
 6-threshold to detect number of ranges 0.3 or 0.2
- se = strel('disk',4);
- temp = imerode(temp,se);
 
- se = strel('disk', 17);
- temp = imclose(temp,se);
+
 
 case 7
 1-image <--7.1.jpg--> have water mark 

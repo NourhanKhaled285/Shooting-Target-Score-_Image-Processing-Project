@@ -1,18 +1,17 @@
-str='1.1c.jpeg';
+ str='4.1.jpg';   %3.2 doubleline effect 4.1 donot know 4.2 can be handeled
+ %in coordinates we should make vertical line to check if that outer
+ %background and detect that
  B = imread(str); 
  B=imresize(B,[1300,1300]);
-[y,x,s]=size(B);
-% figure ,imshow(B),title('original size');
 
-figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1), imshow(B),title('original size');
+pts = Getcenter(B,1);
+hn=floor(pts(2,1));
+wn=floor(pts(1,1)); 
+B = GetCoordinates(B);
 
 
-% <<<<<<< HEAD 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%% preprocessing & hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-% rec=[7,100,1286-7,1202-100];
-% imc=imcrop(B,rec); 
-% B=imc;
-% figure ,imshow(B),title('resized & croped img');
+ figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1), imshow(B),title('original size');
+
 
 level = 0.06;
 temp= im2bw(B,level);
@@ -29,83 +28,92 @@ end
 [A] = size(centers);
 disp(A);
 
-% level = 0.1;
-%  temp= im2bw(B,level);
-%  se = strel('disk',4);
-%  temp = imerode(temp,se);
-% [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');%15 5000
-% viscircles(centers, radi,'EdgeColor','r');
-% figure ,imshow(temp),title('BW detected shoots');
 
-
-% <<<<<<< HEAD
-% %%%%%%%%%%%%%%%%%%%%%%%%range code %%%%%%%%%%%%%%%%%%
-I=B;
-[h,w,s]=size(I);
-hn=floor(h/2);
-wn=floor(w/2);
-for i=wn:w
-   
+ I=B;
+ [h,w,s]=size(I);
+  for i=wn:w
+%       for po=0:10
+%   
+%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
+%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
+%  end
  for po=0:10
-        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn+40-3*po,i,:); %-3po %7
-        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn+40-3*po,i,:);
+  
+        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-30+4*po,i,:);%-3po
+        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-30+4*po,i,:);
  end
 
-end
- figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1),imshow(I),title('horizontal noise deleted');
-% BW2 = bwperim(I,8);
- level = 0.6;
- col=I;
-BW = locallapfilt(I,0.95,0.5);
-BW = locallapfilt(BW,0.7,0.5);
-BW=imgaussfilt(BW,0.7);
- I=im2bw(BW,level);
 
-% figure ,imshow(BW),title('close1');
- subplot(2,2,2),imshow(I),title('BW to calc ranges');
-%%%%%%%%%%%%%%%%%
-L= length(centers);
+  end
+   figure('Renderer', 'painters', 'Position', [250 5 1400 1000]);
+ subplot(2,2,1),image(I),title('horizontal noise deleted');
+ 
+ I=imgaussfilt(I,0.8);
+ I=imgaussfilt(I,0.8);
+ col=I;
+ gray=rgb2gray(I);
+%  I= edge(gray,'canny');
+ y = graythresh(gray);
+ level=0.46;
+ I=edge(gray,'Prewitt',0.04);
+%  I= bwmorph(I, 'Skel', inf);
+ I=im2bw(I,level);
+ [y,x,s]=size(I);
+ subplot(2,2,3),imshow(I),title('BW to calc ranges');
+ L= length(centers);
 CenterColor = I(hn,wn); 
 cou=0;
 check=0;
-cou_matrix=[]
+cou_matrix=[];
 cou_idx=1;
 res=0;
-sav_pos=0;
-jump=0;
 col(hn,wn,1)=0;
 col(hn,wn,2)=0;
 col(hn,wn,3)=255;
-for i=wn:w
+c_sh=1;
+shift=zeros(wn,2);
+ minth=0;
+ min=100000;
+ noises_detected=[];
+ no_det_idx=1;
+ for i=wn:w
+     
+     if(cou_idx==1&&~(CenterColor ==I(hn,i)))
 
-     if(cou_idx==1&&~(CenterColor ==I(hn,i))&&I(hn,i)==I(hn+20,i))
-          %cou
-           jump=jump+1;
-           % if(check==0)
+                noises_detected(no_det_idx)=i-1;
+                no_det_idx=no_det_idx+1;
                 col(hn,i-1,1)=0;
                 col(hn,i-1,2)=0;
                 col(hn,i-1,3)=255;
-                sav_pos=i;
+                
               
              cou_matrix(cou_idx)=cou;
              cou_idx=cou_idx+1;
-          
              CenterColor = I(hn,i); % saved color
        
         cou=0; 
       check=0;
-%                end
+       
+     else
+         cou=cou+1;
+         check=0;
      end
-    if CenterColor ~=I(hn,i)&&I(hn,i)==I(hn+20,i)
-        
 
-               %cou
-            if(cou_idx>1&&cou>=cou_matrix(1)/2)
+    
+    if cou_idx>1&&CenterColor ~=I(hn,i)
 
-%              if(check==0)
-              col(hn,i-1,1)=0;
+            if(cou>=cou_matrix(1)/1.5)
+                
+               
+                col(hn,i-1,1)=0;
                 col(hn,i-1,2)=0;
                 col(hn,i-1,3)=255;
+                
+                
+                noises_detected(no_det_idx)=i-1;
+                no_det_idx=no_det_idx+1;
+                
+                
                 sav_pos=i;
              cou_matrix(cou_idx)=cou;
              cou_idx=cou_idx+1;
@@ -116,27 +124,19 @@ for i=wn:w
             else
              
               CenterColor = I(hn,i); 
-              cou=0;
+              cou=cou+1;
+%                 cou=0;
               check=0;
-             end
-%               else
-%              
-%               CenterColor = I(hn,i); 
-%               cou=0;
-%               check=0;
-%             end
-           
-      else
+            end
+    
+          else
+          
         cou=cou+1;
         check=0;
         end
 end
-% figure,imshow(col),title('colored***************');
-
-
-% cou_matrix
-
-
+   color = {'yellow'};
+   col = insertMarker(col,shift,'x','color',color,'size',10); 
 ranges=0;
 rad_det=[];
 rad_cou=0;
@@ -145,6 +145,9 @@ poos=[];
 pp=1;
 poos2=[];
 pp2=1;
+co=0;
+
+
 for v=wn:w
     if(col(hn,v,1)==0&&col(hn,v,2)==0&&col(hn,v,3)==255)
         ranges=ranges+1;
@@ -163,10 +166,19 @@ for v=wn:w
     
 end
 
-% if ~(strcmp(str,'1.1c.jpeg')||strcmp(str,'3.2c.png'))
-% ranges=ranges-1;
-% end
-% rad_det
+
+
+
+
+rad_det
+% figure,imshow(col);
+
+%%%%%%%%%%%%%%%%%calculate the score%%%%%%%%%%%%%%%%%
+% [distances,Bullseye_hit,score] = CalculateTheScore(rad_det,centers,wn,hn);
+
+% distances
+% Bullseye_hit
+% score
 
 
 pos=zeros(rad_idx-1,2);
@@ -193,179 +205,20 @@ for i=1:pp2-1
     
     end
 end
- color = {'blue'};
+ 
+  color = {'blue'};
  col = insertMarker(col,pos,'x','color',color,'size',10);
  
  color = {'red'};
  col = insertMarker(col,pos2,'x','color',color,'size',10);
 
- color = {'red'};
- col = insertMarker(col,centers,'x','color',color,'size',10);
- subplot(2,2,3.5),imshow(col),title('detected ranges');
+%  col = insertMarker(col, ShootsCenters,'x','color',color ,'size',10);
+ subplot(1,2,2),image(col),title('detected ranges');
+%  
+% figure ,imshow(I),title('BW to calc ranges');
 
-%%%%%%%%%%%%%%%%%calculate the score%%%%%%%%%%%%%%%%%
-ranges=ranges-1;
-rad_det
-Bullseye_hit= ranges *100;
-Bullseye_hit
-distances=[];
-score = 0 ;
-for i=1:L 
+ figure,imshow(col),title('detected ranges');
+ 
+
     
-      px=centers(i,1);
-      py=centers(i,2);
-      d1=((px-(wn)).^2 );
-      d2=((py-(hn)).^2);
-      distances(i)=sqrt(d1+d2);
-end
-distances
-
-for i=2: ranges
-    for j=1 :L
-     
-        if distances(j)<= rad_det(i)&&distances(j)>rad_det(i-1)
-            score=score+Bullseye_hit;
-         
-        end 
-        
-    end
-    Bullseye_hit=Bullseye_hit-50;
-end
-score
-
-
-
-% 
-% % % % % % % % % % % % % % % coordinates of the board% % % % % % % % % % % % % %
-% % 
-% % figure ,imshow(fg);
-% % xn=floor(x/2);
-% % yn=floor(y/2);
-% % col_tem=B(1,xn);
-% % cory=0;
-% % for cory=1:y
-% %     if~(col_tem==B(cory,xn))
-% %     
-% %         break;
-% %     else
-% %        col_tem=B(cory,xn); 
-% %     end
-% %     
-% %     
-% % end
-% % 
-% %   pxtop=xn;
-% %   pytop=cory;
-% %     ptop=zeros(1,2);
-% %   ptop(1,1)=pxtop;
-% %   ptop(1,2)=pytop;
-% %   
-% %   
-% %   
-% %       col_tem=B(1,yn);
-% %     for corx=1:x
-% %           if~(col_tem==B(yn,corx))
-% %     
-% %         break;
-% %     else
-% %        col_tem=B(yn,corx); 
-% %     end
-% % 
-% %     end
-% %     pxleft=corx;
-% %     pyleft=yn;
-% %     pleft=zeros(1,2);
-% %   pleft(1,1)=pxleft;
-% %   pleft(1,2)=pyleft;
-% % 
-% %   
-% %   
-% %   
-% %    col_tem=B(x,yn);
-% %    corx=x;
-% %    
-% %      while corx>=1 
-% %           if (col_tem==B(pyleft,pxleft))
-% %     
-% %         break;
-% %     else
-% %        col_tem=B(yn,corx); 
-% %           end
-% %      corx=corx-1;
-% %     end
-% %     pxright=corx;
-% %     pyright=yn;
-% %     pright=zeros(1,2);
-% %   pright(1,1)=pxright;
-% %   pright(1,2)=pyright;
-% %     
-% % 
-% %   color={'red'};
-% %   B = insertMarker(B,ptop,'x','color',color,'size',10);
-% %   
-% %     color={'red'};
-% %   B = insertMarker(B,pleft,'x','color',color,'size',10);
-% % 
-% %   B = insertMarker(B,pright,'x','color',color,'size',10);
-% %   figure ,imshow(B);
-% %   
-% %     d1=((pxtop-(xn)).^2 );
-% %     d2=((pytop-(yn)).^2);
-% %     rad=sqrt(d1+d2);
-% %     im=filldisk(rad);
-% %     im=imresize(im,[1300,1300]);
-% %     for oo=1:1300
-% %         for kk=1:1300
-% %            im(oo,kk,1)= im(oo,kk,1)*B(oo,kk,1);
-% %            im(oo,kk,2)= im(oo,kk,2)*B(oo,kk,2);
-% %            im(oo,kk,3)= im(oo,kk,3)*B(oo,kk,3);
-% %         end
-% %     end
-% %     figure,imshow(im);
-% %     
-% %   
-% 
-% 
-% % 
-
-
-
-%  rec=[7,100,1286-7,1202-100];
-%  imc=imcrop(B,rec); 
-%  B=imc;
-% figure ,imshow(B),title('resized & croped img');
-% % gray=rgb2gray(B);
-% % temp=gray>100;
-%    level = 0.1;
-% %  level = 0.6;
-%  temp= im2bw(B,level);
-% %  se = strel('disk',6);
-% %  temp = imopen(temp,se);
-% %  se = strel('disk',4);
-% %  temp = imerode(temp,se);
-% %  se = strel('disk', 17);
-% %  temp = imclose(temp,se);
-% 
-%  figure ,imshow(temp),title('hough transform detected img');
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% hough transform detected %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% [centers, radi,matrix] = imfindcircles(temp,[16 35],'ObjectPolarity','bright');%16 35
-% viscircles(centers, radi,'EdgeColor','b');
-
-
-
-% [centers, radi,matrix] = imfindcircles(temp,[16 35],'ObjectPolarity','dark');%15 5000
-% viscircles(centers, radi,'EdgeColor','r');
-
-% 
-% [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');%15 5000
-% viscircles(centers, radi,'EdgeColor','r');
-
-
-% [centers, radi,matrix] = imfindcircles(temp,[12 80],'ObjectPolarity','bright');%15 5000
-% viscircles(centers, radi,'EdgeColor','b');
- 
-% [centers, radi,matrix] = imfindcircles(temp,[12 60],'ObjectPolarity','bright');%15 5000
-% viscircles(centers, radi,'EdgeColor','b');
-
+  

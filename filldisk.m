@@ -1,4 +1,5 @@
 function y = filldisk(radius)
+radius=100;
 rsq = radius * radius;
 R = round(radius);
 c = R + 1;
@@ -40,8 +41,8 @@ for rstart = 1:R
     y(c-rstart, c-rend:c-rstart,:) = 1;
     
 end
-
+imshow(y);
 end
-
-
-
+% 
+% 
+% 
