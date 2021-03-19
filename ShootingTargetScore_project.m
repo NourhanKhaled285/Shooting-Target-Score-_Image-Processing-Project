@@ -1,4 +1,4 @@
- str='4.1.jpg';   %3.2 doubleline effect 4.1 donot know 4.2 can be handeled
+ str='4.2.jpg';   %3.2 doubleline effect 4.1 donot know 4.2 can be handeled
  %in coordinates we should make vertical line to check if that outer
  %background and detect that
  B = imread(str); 
@@ -7,7 +7,10 @@
 pts = Getcenter(B,1);
 hn=floor(pts(2,1));
 wn=floor(pts(1,1)); 
-B = GetCoordinates(B);
+
+% hf=floor(pts(2,2));
+% wf=floor(pts(1,2));
+% B = GetCoordinates(B);
 
 
  figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1), imshow(B),title('original size');
@@ -31,6 +34,46 @@ disp(A);
 
  I=B;
  [h,w,s]=size(I);
+ if strcmp(str,'3.2.png')
+     for i=wn:w
+%       for po=0:10
+%   
+%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
+%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
+%  end
+ for po=0:10
+% wf=floor(pts(1,2));
+% B = GetCoordinates(B);
+
+
+  
+        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-20+po,i,:);%-3po
+        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-20+po,i,:);
+ end
+ end
+  
+%  I=imgaussfilt(I,0.8);
+%  I=imgaussfilt(I,0.8);
+ col=I;
+ gray=rgb2gray(I);
+%  I= edge(gray,'canny');
+ y = graythresh(gray);
+ level=0.6;
+ I=edge(gray,'Prewitt',0.04);
+%  I= bwmorph(I, 'Skel', inf);
+ I=im2bw(I,level);
+%   se=strel('line',15,20);
+%  I=impothat(I,se);
+ se=strel('disk',6);
+ I=imclose(I,se);
+ 
+ 
+  se=strel('disk',4);
+ I=imopen(I,se);
+%  imshow(I);
+
+ else
+  
   for i=wn:w
 %       for po=0:10
 %   
@@ -48,8 +91,8 @@ disp(A);
    figure('Renderer', 'painters', 'Position', [250 5 1400 1000]);
  subplot(2,2,1),image(I),title('horizontal noise deleted');
  
- I=imgaussfilt(I,0.8);
- I=imgaussfilt(I,0.8);
+%  I=imgaussfilt(I,0.8);
+%  I=imgaussfilt(I,0.8);
  col=I;
  gray=rgb2gray(I);
 %  I= edge(gray,'canny');
@@ -58,6 +101,10 @@ disp(A);
  I=edge(gray,'Prewitt',0.04);
 %  I= bwmorph(I, 'Skel', inf);
  I=im2bw(I,level);
+%  se=strel('line',w,0);
+%  I=imerode(I,se);
+
+end
  [y,x,s]=size(I);
  subplot(2,2,3),imshow(I),title('BW to calc ranges');
  L= length(centers);
@@ -76,6 +123,7 @@ shift=zeros(wn,2);
  min=100000;
  noises_detected=[];
  no_det_idx=1;
+ get=[];
  for i=wn:w
      
      if(cou_idx==1&&~(CenterColor ==I(hn,i)))
@@ -104,7 +152,8 @@ shift=zeros(wn,2);
 
             if(cou>=cou_matrix(1)/1.5)
                 
-               
+               get(1)=cou_matrix(cou_idx-1);
+               get(2)=cou;
                 col(hn,i-1,1)=0;
                 col(hn,i-1,2)=0;
                 col(hn,i-1,3)=255;
@@ -134,6 +183,13 @@ shift=zeros(wn,2);
         cou=cou+1;
         check=0;
         end
+ end
+ get(2)
+ get(1)
+if(get(2)>1.5*get(1))
+    col(hn,noises_detected(no_det_idx-1),1)=255;
+    col(hn,noises_detected(no_det_idx-1),2)=255;
+    col(hn,noises_detected(no_det_idx-1),3)=0;
 end
    color = {'yellow'};
    col = insertMarker(col,shift,'x','color',color,'size',10); 
@@ -165,6 +221,7 @@ for v=wn:w
     end
     
 end
+
 
 
 
@@ -214,8 +271,8 @@ end
 
 %  col = insertMarker(col, ShootsCenters,'x','color',color ,'size',10);
  subplot(1,2,2),image(col),title('detected ranges');
-%  
-% figure ,imshow(I),title('BW to calc ranges');
+ 
+figure ,imshow(I),title('BW to calc ranges');
 
  figure,imshow(col),title('detected ranges');
  
