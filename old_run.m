@@ -1,22 +1,41 @@
- str='2.1.png';   %3.2 doubleline effect 4.1 donot know 4.2 can be handeled
+ str='3.3.jpg';   %3.2 doubleline effect 4.1 donot know 4.2 can be handeled
  %in coordinates we should make vertical line to check if that outer
  %background and detect that
- B = imread(str);  
+ B = imread(str); 
  B=imresize(B,[1300,1300]);
 
-% pts = Getcenter(B,1);
-% hn=floor(pts(2,1));
-% wn=floor(pts(1,1));
-
-
+pts = Getcenter(B,1);
+hn=floor(pts(2,1));
+wn=floor(pts(1,1));
+aaa=hn
+bbb=wn
+% hf=floor(pts(2,2));
+% wf=floor(pts(1,2));
+% B = GetCoordinates(B);
 figure,imshow(B);
 
  %figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1), imshow(B),title('original size');
 
 
- [hn,wn]=get_coordinates(str);
+% level = 0.06;
+% temp= im2bw(B,level);
+% [centers] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');
+% [A] = size(centers) ;
+% if(A==0)
+%  [centers , radi , matrix,I] = bright(B);
+% %  subplot(2,2,2), imshow(I),title('hough transform detected img');
+% else
+%  [centers , radi , matrix,I,I2] = dark(B);
+% %  subplot(2,2,2), imshow(I),title('hough transform detected img bothat');
+% %  subplot(2,2,3.5), imshow(I2),title('hough transform detected img');
+% end
+% [A] = size(centers);
+% disp(A);
 
-
+% rec=[7,100,1286-7,1202-100];
+% imc=imcrop(B,rec); 
+% B=imc;
+% figure ,imshow(B),title('resized & croped img');
 level = 0.8;
 temp= im2bw(B,level);
 [centers] = imfindcircles(temp,[15 60],'ObjectPolarity','bright');
@@ -29,15 +48,25 @@ else
 end
 [A] = size(centers);
 disp(A);
-centers
+
+
+
 
 
  I=B;
  [h,w,s]=size(I);
+ 
  if strcmp(str,'3.2.png')
      for i=wn:w
-
+%       for po=0:10
+%   
+%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
+%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
+%  end
  for po=0:10
+% wf=floor(pts(1,2));
+% B = GetCoordinates(B);
+
 
   
         I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-20+po,i,:);%-3po
@@ -66,15 +95,17 @@ centers
 %  imshow(I);
 
  else
-     
-  prec=(30/650);
-  vv=floor(prec*hn);
+  
   for i=wn:w
-
+%       for po=0:10
+%   
+%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
+%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
+%  end
  for po=0:10
   
-        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-vv+4*po,i,:);%-3po
-        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-vv+4*po,i,:);
+        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-30+4*po,i,:);%-3po
+        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-30+4*po,i,:);
  end
 
 
@@ -177,6 +208,179 @@ shift=zeros(wn,2);
         check=0;
         end
  end
+ 
+ 
+ 
+ 
+ 
+ if strcmp(str,'3.2.png')
+     for i=hn:h
+%       for po=0:10
+%   
+%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
+%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
+%  end
+ for po=0:10
+% wf=floor(pts(1,2));
+% B = GetCoordinates(B);
+
+
+  
+        I(i,wn+po,:)=I(i,:)*0+I(hn-20+po,i,:);%-3po
+        I(i,wn+po,:)=I(hn+po,i,:)*0+I(hn-20+po,i,:);
+ end
+ end
+  
+%  I=imgaussfilt(I,0.8);
+%  I=imgaussfilt(I,0.8);
+ col=I;
+ gray=rgb2gray(I);
+%  I= edge(gray,'canny');
+ y = graythresh(gray);
+ level=0.6;
+ I=edge(gray,'Prewitt',0.04);
+%  I= bwmorph(I, 'Skel', inf);
+ I=im2bw(I,level);
+%   se=strel('line',15,20);
+%  I=impothat(I,se);
+ se=strel('disk',6);
+ I=imclose(I,se);
+ 
+ 
+  se=strel('disk',4);
+ I=imopen(I,se);
+%  imshow(I);
+
+ else
+  
+  for i=wn:w
+%       for po=0:10
+%   
+%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
+%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
+%  end
+ for po=0:10
+  
+        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-30+4*po,i,:);%-3po
+        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-30+4*po,i,:);
+ end
+
+
+  end
+  
+%    figure('Renderer', 'painters', 'Position', [250 5 1400 1000]);
+%  subplot(2,2,1),image(I),title('horizontal noise deleted');
+ 
+%  I=imgaussfilt(I,0.8);
+%  I=imgaussfilt(I,0.8);
+ col=I;
+ gray=rgb2gray(I);
+%  I= edge(gray,'canny');
+ y = graythresh(gray);
+ level=0.46;
+ I=edge(gray,'Prewitt',0.04);
+%  I= bwmorph(I, 'Skel', inf);
+ I=im2bw(I,level);
+%  se=strel('line',w,0);
+%  I=imerode(I,se);
+
+ end
+
+
+%  subplot(2,2,3),imshow(I),title('BW to calc ranges');
+ L= length(centers);
+CenterColor = I(hn,wn); 
+cou=0;
+check=0;
+cou_matrix=[];
+cou_idx=1;
+res=0;
+col(hn,wn,1)=0;
+col(hn,wn,2)=0;
+col(hn,wn,3)=255;
+c_sh=1;
+shift=zeros(wn,2);
+ minth=0;
+ min=100000;
+ noises_detected=[];
+ no_det_idx=1;
+ get=[];
+ for i=wn:w
+     
+     if(cou_idx==1&&~(CenterColor ==I(hn,i)))
+
+                noises_detected(no_det_idx)=i-1;
+                no_det_idx=no_det_idx+1;
+                col(hn,i-1,1)=0;
+                col(hn,i-1,2)=0;
+                col(hn,i-1,3)=255;
+                
+              
+             cou_matrix(cou_idx)=cou;
+             cou_idx=cou_idx+1;
+             CenterColor = I(hn,i); % saved color
+       
+        cou=0; 
+      check=0;
+       
+     else
+         cou=cou+1;
+         check=0;
+     end
+
+    
+    if cou_idx>1&&CenterColor ~=I(hn,i)
+
+            if(cou>=cou_matrix(1)/1.5)
+                
+               get(1)=cou_matrix(cou_idx-1);
+               get(2)=cou;
+                col(hn,i-1,1)=0;
+                col(hn,i-1,2)=0;
+                col(hn,i-1,3)=255;
+                
+                
+                noises_detected(no_det_idx)=i-1;
+                no_det_idx=no_det_idx+1;
+                
+                
+                sav_pos=i;
+             cou_matrix(cou_idx)=cou;
+             cou_idx=cou_idx+1;
+           
+             CenterColor = I(hn,i); % saved color
+           
+             cou=0;
+            else
+             
+              CenterColor = I(hn,i); 
+              cou=cou+1;
+%                 cou=0;
+              check=0;
+            end
+    
+          else
+          
+        cou=cou+1;
+        check=0;
+        end
+ end
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  get(2)
  get(1)
 if(get(2)>1.5*get(1))
@@ -195,13 +399,10 @@ pp=1;
 poos2=[];
 pp2=1;
 co=0;
-bx=1;
-ind_ran=[]
+
 
 for v=wn:w
     if(col(hn,v,1)==0&&col(hn,v,2)==0&&col(hn,v,3)==255)
-        ind_ran(bx)=v;
-        bx=bx+1;
         ranges=ranges+1;
         poos(pp)=v;
         pp=pp+1;
@@ -220,21 +421,21 @@ end
 
 ranges=ranges-1
 
-ind_ran
+
 
 
 rad_det
-% hn
-% wn
+hn
+wn
 % figure,imshow(col);
 
 %%%%%%%%%%%%%%%%%calculate the score%%%%%%%%%%%%%%%%%
-[distances,Bullseye_hit,score,score_array_each_range] = CalculateTheScore(rad_det,centers,wn,hn);
+[distances,Bullseye_hit,score,scor_ar] = CalculateTheScore(rad_det,centers,wn,hn);
 
 distances
 Bullseye_hit
 score
-scor_array_each_range
+scor_ar
 
 
 pos=zeros(rad_idx-1,2);

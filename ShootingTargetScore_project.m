@@ -1,50 +1,43 @@
- str='4.2.jpg';   %3.2 doubleline effect 4.1 donot know 4.2 can be handeled
+ str='2.1.png';   %3.2 doubleline effect 4.1 donot know 4.2 can be handeled
  %in coordinates we should make vertical line to check if that outer
  %background and detect that
- B = imread(str); 
+ B = imread(str);  
  B=imresize(B,[1300,1300]);
 
-pts = Getcenter(B,1);
-hn=floor(pts(2,1));
-wn=floor(pts(1,1)); 
-
-% hf=floor(pts(2,2));
-% wf=floor(pts(1,2));
-% B = GetCoordinates(B);
+% pts = Getcenter(B,1);
+% hn=floor(pts(2,1));
+% wn=floor(pts(1,1));
 
 
- figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1), imshow(B),title('original size');
+figure,imshow(B);
+
+ %figure('Renderer', 'painters', 'Position', [250 5 900 1000]),subplot(2,2,1), imshow(B),title('original size');
 
 
-level = 0.06;
+ [hn,wn]=get_coordinates(str);
+
+
+level = 0.8;
 temp= im2bw(B,level);
-[centers] = imfindcircles(temp,[12 60],'ObjectPolarity','dark');
+[centers] = imfindcircles(temp,[15 60],'ObjectPolarity','bright');
 [A] = size(centers) ;
+disp(A);
 if(A==0)
- [centers , radi , matrix,I] = bright(B);
- subplot(2,2,2), imshow(I),title('hough transform detected img');
+  [centers , radi , matrix] = dark(B);
 else
- [centers , radi , matrix,I,I2] = dark(B);
- subplot(2,2,2), imshow(I),title('hough transform detected img bothat');
- subplot(2,2,3.5), imshow(I2),title('hough transform detected img');
+ [centers , radi , matrix] = bright(B);
 end
 [A] = size(centers);
 disp(A);
+centers
 
 
  I=B;
  [h,w,s]=size(I);
  if strcmp(str,'3.2.png')
      for i=wn:w
-%       for po=0:10
-%   
-%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
-%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
-%  end
- for po=0:10
-% wf=floor(pts(1,2));
-% B = GetCoordinates(B);
 
+ for po=0:10
 
   
         I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-20+po,i,:);%-3po
@@ -73,23 +66,22 @@ disp(A);
 %  imshow(I);
 
  else
-  
+     
+  prec=(30/650);
+  vv=floor(prec*hn);
   for i=wn:w
-%       for po=0:10
-%   
-%             I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-mod(i,30),i,:);%-3po
-%             I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-mod(i,30),i,:); 
-%  end
+
  for po=0:10
   
-        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-30+4*po,i,:);%-3po
-        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-30+4*po,i,:);
+        I(hn-po,i,:)=I(hn-po,i,:)*0+I(hn-vv+4*po,i,:);%-3po
+        I(hn+po,i,:)=I(hn+po,i,:)*0+I(hn-vv+4*po,i,:);
  end
 
 
   end
-   figure('Renderer', 'painters', 'Position', [250 5 1400 1000]);
- subplot(2,2,1),image(I),title('horizontal noise deleted');
+  
+%    figure('Renderer', 'painters', 'Position', [250 5 1400 1000]);
+%  subplot(2,2,1),image(I),title('horizontal noise deleted');
  
 %  I=imgaussfilt(I,0.8);
 %  I=imgaussfilt(I,0.8);
@@ -104,9 +96,10 @@ disp(A);
 %  se=strel('line',w,0);
 %  I=imerode(I,se);
 
-end
- [y,x,s]=size(I);
- subplot(2,2,3),imshow(I),title('BW to calc ranges');
+ end
+
+
+%  subplot(2,2,3),imshow(I),title('BW to calc ranges');
  L= length(centers);
 CenterColor = I(hn,wn); 
 cou=0;
@@ -202,10 +195,13 @@ pp=1;
 poos2=[];
 pp2=1;
 co=0;
-
+bx=1;
+ind_ran=[]
 
 for v=wn:w
     if(col(hn,v,1)==0&&col(hn,v,2)==0&&col(hn,v,3)==255)
+        ind_ran(bx)=v;
+        bx=bx+1;
         ranges=ranges+1;
         poos(pp)=v;
         pp=pp+1;
@@ -222,20 +218,23 @@ for v=wn:w
     
 end
 
+ranges=ranges-1
 
-
-
+ind_ran
 
 
 rad_det
+% hn
+% wn
 % figure,imshow(col);
 
 %%%%%%%%%%%%%%%%%calculate the score%%%%%%%%%%%%%%%%%
-% [distances,Bullseye_hit,score] = CalculateTheScore(rad_det,centers,wn,hn);
+[distances,Bullseye_hit,score,score_array_each_range] = CalculateTheScore(rad_det,centers,wn,hn);
 
-% distances
-% Bullseye_hit
-% score
+distances
+Bullseye_hit
+score
+score_array_each_range
 
 
 pos=zeros(rad_idx-1,2);
@@ -270,7 +269,7 @@ end
  col = insertMarker(col,pos2,'x','color',color,'size',10);
 
 %  col = insertMarker(col, ShootsCenters,'x','color',color ,'size',10);
- subplot(1,2,2),image(col),title('detected ranges');
+%  subplot(1,2,2),image(col),title('detected ranges');
  
 figure ,imshow(I),title('BW to calc ranges');
 
